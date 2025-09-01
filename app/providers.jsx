@@ -1,7 +1,18 @@
 "use client";
 
-import { SessionProvider } from "next-auth/react";
+import { useEffect } from "react";
+
+// Only import on server startup
+if (typeof window === "undefined") {
+  import("@/lib/cron").then(({ startCron }) => {
+    startCron();
+  });
+}
 
 export default function Providers({ children }) {
-  return <SessionProvider>{children}</SessionProvider>;
+  useEffect(() => {
+    console.log("Providers mounted");
+  }, []);
+
+  return children;
 }
