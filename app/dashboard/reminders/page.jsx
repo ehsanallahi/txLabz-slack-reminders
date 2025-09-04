@@ -33,17 +33,26 @@ export default function RemindersPage() {
     refresh();
   }, []);
 
-  async function createReminder(e) {
+ async function createReminder(e) {
     e.preventDefault();
+    // Convert the local datetime string from the input into a UTC ISO string
+    const scheduleAtUTC = new Date(form.scheduleAt).toISOString();
+
     const payload = {
-      ...form,
+      message: form.message,
+      channelId: form.channelId,
+      scheduleAt: scheduleAtUTC, // Send the standardized UTC time
       channelName: selectedChannel?.name,
-      startAt: form.startAt ? new Date(form.startAt) : undefined,
-      endAt: form.endAt ? new Date(form.endAt) : undefined,
     };
-    const res = await fetch("/api/reminders", { method: "POST", body: JSON.stringify(payload) });
+    
+    const res = await fetch("/api/reminders", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload)
+    });
+
     if (res.ok) {
-      setForm({ ...form, message: "" });
+      setForm({ ...form, message: "", scheduleAt: "" }); // Clear message and date on success
       await refresh();
     }
   }
