@@ -16,7 +16,13 @@ const ReminderSchema = new mongoose.Schema(
     channelName: { type: String },
     scheduleAt: { type: Date, required: true },
     isPaused: { type: Boolean, default: false },
-    sent: { type: Boolean, default: false },
+    // Flag for one-time reminders
+    sent: { type: Boolean, default: false }, 
+    // New fields for recurring reminders
+    frequency: { type: String, enum: ['once', 'daily', 'weekly'], default: 'once' },
+    time: { type: String }, // e.g., "09:00"
+    dayOfWeek: { type: String }, // e.g., "1" for Monday
+    
     deliveries: { type: [DeliverySchema], default: [] },
     createdBy: { type: String },
   },
@@ -28,5 +34,3 @@ if (mongoose.models.Reminder) {
   delete mongoose.models.Reminder;
 }
 export default mongoose.model("Reminder", ReminderSchema);
-
-
