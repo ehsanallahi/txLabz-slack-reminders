@@ -3,13 +3,15 @@
 import Link from 'next/link';
 import { Button } from "@/components/ui/button";
 import { Bell, CalendarClock, BotMessageSquare, Edit } from "lucide-react";
+import HeroSectionOne from '@/components/hero-section-one.jsx';
+import FeaturesSectionDemo from '@/components/features-section-demo-2.jsx';
 
 // Main Landing Page Component
 export default function Home() {
   return (
     <div className="flex flex-col min-h-screen bg-background text-foreground">
       {/* Header */}
-      <header className="px-4 lg:px-6 h-16 flex items-center border-b">
+      {/* <header className="px-4 lg:px-6 h-16 flex items-center border-b">
         <Link href="#" className="flex items-center justify-center" prefetch={false}>
           <Bell className="h-6 w-6 text-primary" />
           <span className="ml-2 text-lg font-semibold">TxLabz Reminder App</span>
@@ -21,27 +23,11 @@ export default function Home() {
             </Button>
           </Link>
         </nav>
-      </header>
+      </header> */}
 
       <main className="flex-1">
         {/* Hero Section */}
-        <section className="w-full py-12 md:py-24 lg:py-32 xl:py-48 text-center">
-          <div className="container px-4 md:px-6">
-            <div className="flex flex-col items-center space-y-4">
-              <h1 className="text-4xl font-bold tracking-tighter sm:text-5xl md:text-6xl">
-                Never Miss a Beat in Slack.
-              </h1>
-              <p className="mx-auto max-w-[700px] text-muted-foreground md:text-xl">
-                Automate your team's workflow with powerful, recurring reminders. Schedule one-time, daily, or weekly messages with our intuitive rich text editor.
-              </p>
-              <div className="space-x-4">
-                <Link href="/login" prefetch={false}>
-                  <Button size="lg">Get Started</Button>
-                </Link>
-              </div>
-            </div>
-          </div>
-        </section>
+        <HeroSectionOne />
 
         {/* App Preview Section */}
         <section className="w-full py-12 md:py-24 lg:py-32 bg-muted/40">
@@ -56,11 +42,12 @@ export default function Home() {
                   </div>
                 </div>
                 <img
-                  src="https://placehold.co/1200x675/f0f0f0/333333?text=App+Dashboard+Screenshot&font=sans"
+                  src="app-dashboard.png"
+                  
                   width="1200"
                   height="675"
                   alt="App Preview"
-                  className="w-full h-auto aspect-video object-cover"
+                  className="w-full h-auto aspect-video object-fill"
                 />
               </div>
             </div>
@@ -70,7 +57,7 @@ export default function Home() {
 
         {/* Features Section */}
         <section className="w-full py-12 md:py-24 lg:py-32">
-          <div className="container px-4 md:px-6">
+          {/* <div className="container px-4 md:px-6">
             <div className="flex flex-col items-center justify-center space-y-4 text-center mb-12">
               <div className="inline-block rounded-lg bg-muted px-3 py-1 text-sm">Key Features</div>
               <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl">Everything You Need to Keep Your Team in Sync</h2>
@@ -113,7 +100,8 @@ export default function Home() {
                 </p>
               </div>
             </div>
-          </div>
+          </div> */}
+          <FeaturesSectionDemo />
         </section>
 
       </main>
