@@ -1,10 +1,10 @@
 "use client";
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import { Play, Pause, Trash2, Send } from "lucide-react";
+import { Play, Pause, Trash2, Send, Edit } from "lucide-react"; // Import Edit icon
 import ReactMarkdown from 'react-markdown';
 
-export function RemindersList({ reminders, onPause, onDelete, onRunNow, onSelect }) {
+export function RemindersList({ reminders, onPause, onDelete, onRunNow, onSelect, onEdit }) { // Add onEdit prop
     const handleActionClick = (e, action) => {
         e.stopPropagation();
         action();
@@ -46,7 +46,12 @@ export function RemindersList({ reminders, onPause, onDelete, onRunNow, onSelect
                                 <TableCell>{formatSchedule(r)}</TableCell>
                                 <TableCell><span className={`px-2 py-1 text-xs font-semibold rounded-full ${r.isPaused ? 'bg-yellow-100 text-yellow-800' : 'bg-green-100 text-green-800'}`}>{r.isPaused ? "Paused" : "Active"}</span></TableCell>
                                 <TableCell>{r.deliveries?.length ? new Date(r.deliveries[r.deliveries.length - 1].at).toLocaleString() : '—'}</TableCell>
-                                <TableCell className="text-right"><div className="flex items-center justify-end space-x-2"><Button variant="ghost" size="icon" onClick={(e) => handleActionClick(e, () => onPause(r._id, r.isPaused))} title={r.isPaused ? "Resume" : "Pause"}>{r.isPaused ? <Play className="w-4 h-4" /> : <Pause className="w-4 h-4" />}</Button><Button variant="ghost" size="icon" onClick={(e) => handleActionClick(e, () => onRunNow(r._id))} title="Run Now"><Send className="w-4 h-4" /></Button><Button variant="ghost" size="icon" onClick={(e) => handleActionClick(e, () => onDelete(r._id))} title="Delete"><Trash2 className="w-4 h-4 text-destructive" /></Button></div></TableCell>
+                                <TableCell className="text-right"><div className="flex items-center justify-end space-x-2">
+                                    <Button variant="ghost" size="icon" onClick={(e) => handleActionClick(e, () => onEdit(r))} title="Edit"><Edit className="w-4 h-4" /></Button> 
+                                    <Button variant="ghost" size="icon" onClick={(e) => handleActionClick(e, () => onPause(r._id, r.isPaused))} title={r.isPaused ? "Resume" : "Pause"}>{r.isPaused ? <Play className="w-4 h-4" /> : <Pause className="w-4 h-4" />}</Button>
+                                    <Button variant="ghost" size="icon" onClick={(e) => handleActionClick(e, () => onRunNow(r._id))} title="Run Now"><Send className="w-4 h-4" /></Button>
+                                    <Button variant="ghost" size="icon" onClick={(e) => handleActionClick(e, () => onDelete(r._id))} title="Delete"><Trash2 className="w-4 h-4 text-destructive" /></Button>
+                                </div></TableCell>
                             </TableRow>
                         ))}
                     </TableBody>
@@ -61,7 +66,12 @@ export function RemindersList({ reminders, onPause, onDelete, onRunNow, onSelect
                             <p><strong>Schedule:</strong> {formatSchedule(r)}</p>
                             <p><strong>Status:</strong> <span className={`px-2 py-1 text-xs font-semibold rounded-full ${r.isPaused ? 'bg-yellow-100 text-yellow-800' : 'bg-green-100 text-green-800'}`}>{r.isPaused ? "Paused" : "Active"}</span></p>
                         </div>
-                        <div className="flex items-center justify-end space-x-2 border-t pt-2"><Button variant="ghost" size="sm" onClick={(e) => handleActionClick(e, () => onPause(r._id, r.isPaused))} title={r.isPaused ? "Resume" : "Pause"}>{r.isPaused ? <Play className="w-4 h-4" /> : <Pause className="w-4 h-4" />}</Button><Button variant="ghost" size="sm" onClick={(e) => handleActionClick(e, () => onRunNow(r._id))} title="Run Now"><Send className="w-4 h-4" /></Button><Button variant="ghost" size="sm" onClick={(e) => handleActionClick(e, () => onDelete(r._id))} title="Delete"><Trash2 className="w-4 h-4 text-destructive" /></Button></div>
+                        <div className="flex items-center justify-end space-x-2 border-t pt-2">
+                            <Button variant="ghost" size="sm" onClick={(e) => handleActionClick(e, () => onEdit(r))} title="Edit"><Edit className="w-4 h-4" /></Button>
+                            <Button variant="ghost" size="sm" onClick={(e) => handleActionClick(e, () => onPause(r._id, r.isPaused))} title={r.isPaused ? "Resume" : "Pause"}>{r.isPaused ? <Play className="w-4 h-4" /> : <Pause className="w-4 h-4" />}</Button>
+                            <Button variant="ghost" size="sm" onClick={(e) => handleActionClick(e, () => onRunNow(r._id))} title="Run Now"><Send className="w-4 h-4" /></Button>
+                            <Button variant="ghost" size="sm" onClick={(e) => handleActionClick(e, () => onDelete(r._id))} title="Delete"><Trash2 className="w-4 h-4 text-destructive" /></Button>
+                        </div>
                     </div>
                 ))}
             </div>

@@ -1,26 +1,118 @@
 "use client";
 
 import { useState, useEffect, useMemo } from "react";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, List, Clock, CheckCircle, PauseCircle, AlertTriangle, Send } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Sidebar } from "./components/Sidebar";
 import { MobileNav } from "./components/MobileNav";
 import { Header } from "./components/Header";
 import { CreateReminderForm } from "./components/CreateReminderForm";
 import { RemindersList } from "./components/RemindersList";
 import { DeliveryHistoryDialog } from "./components/DeliveryHistoryDialog";
+import { EditReminderDialog } from "./components/EditReminderDialog";
 
 const PAGE_SIZE = 6;
 
+// Component for the stats dashboard
+function HomeStats({ stats }) {
+    return (
+        <div>
+            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                <Card>
+                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                        <CardTitle className="text-sm font-medium">Total Reminders</CardTitle>
+                        <List className="h-4 w-4 text-muted-foreground" />
+                    </CardHeader>
+                    <CardContent>
+                        <div className="text-2xl font-bold">{stats.total}</div>
+                        <p className="text-xs text-muted-foreground">All reminders created</p>
+                    </CardContent>
+                </Card>
+                <Card>
+                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                        <CardTitle className="text-sm font-medium">Active Reminders</CardTitle>
+                        <Clock className="h-4 w-4 text-muted-foreground" />
+                    </CardHeader>
+                    <CardContent>
+                        <div className="text-2xl font-bold">{stats.active}</div>
+                        <p className="text-xs text-muted-foreground">Scheduled and not paused</p>
+                    </CardContent>
+                </Card>
+                <Card>
+                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                        <CardTitle className="text-sm font-medium">Delivered Reminders</CardTitle>
+                        <CheckCircle className="h-4 w-4 text-muted-foreground" />
+                    </CardHeader>
+                    <CardContent>
+                        <div className="text-2xl font-bold">{stats.delivered}</div>
+                         <p className="text-xs text-muted-foreground">Successfully sent reminders</p>
+                    </CardContent>
+                </Card>
+                <Card>
+                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                        <CardTitle className="text-sm font-medium">Paused Reminders</CardTitle>
+                        <PauseCircle className="h-4 w-4 text-muted-foreground" />
+                    </CardHeader>
+                    <CardContent>
+                        <div className="text-2xl font-bold">{stats.paused}</div>
+                        <p className="text-xs text-muted-foreground">Currently paused reminders</p>
+                    </CardContent>
+                </Card>
+                <Card>
+                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                        <CardTitle className="text-sm font-medium">Failed Deliveries</CardTitle>
+                        <AlertTriangle className="h-4 w-4 text-muted-foreground" />
+                    </CardHeader>
+                    <CardContent>
+                        <div className="text-2xl font-bold">{stats.failed}</div>
+                        <p className="text-xs text-muted-foreground">Reminders that failed to send</p>
+                    </CardContent>
+                </Card>
+                <Card>
+                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                        <CardTitle className="text-sm font-medium">Upcoming Reminders</CardTitle>
+                        <Send className="h-4 w-4 text-muted-foreground" />
+                    </CardHeader>
+                    <CardContent>
+                        <div className="text-2xl font-bold">{stats.upcoming}</div>
+                        <p className="text-xs text-muted-foreground">Scheduled for the next 24 hours</p>
+                    </CardContent>
+                </Card>
+            </div>
+        </div>
+    );
+}
+
+
 export default function DashboardPage() {
-    const [view, setView] = useState("view");
+    const [view, setView] = useState("home");
     const [reminders, setReminders] = useState([]);
     const [channels, setChannels] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
     const [selectedReminder, setSelectedReminder] = useState(null);
+    const [editingReminder, setEditingReminder] = useState(null);
     const [currentPage, setCurrentPage] = useState(1);
     const [isNavOpen, setIsNavOpen] = useState(false);
+
+    // Calculate stats for the home dashboard
+    const stats = useMemo(() => {
+        const now = new Date();
+        const next24Hours = new Date(now.getTime() + 24 * 60 * 60 * 1000);
+
+        const total = reminders.length;
+        const active = reminders.filter(r => !r.isPaused && !r.sent).length;
+        const delivered = reminders.filter(r => r.sent).length;
+        const paused = reminders.filter(r => r.isPaused).length;
+        const failed = reminders.filter(r => r.deliveries.some(d => !d.ok)).length;
+        const upcoming = reminders.filter(r => {
+            const scheduleAt = new Date(r.scheduleAt);
+            return scheduleAt > now && scheduleAt <= next24Hours && !r.isPaused && !r.sent;
+        }).length;
+
+        return { total, active, delivered, paused, failed, upcoming };
+    }, [reminders]);
 
     const { paginatedItems, totalPages } = useMemo(() => {
         const totalPages = Math.ceil(reminders.length / PAGE_SIZE);
@@ -56,9 +148,19 @@ export default function DashboardPage() {
         const res = await fetch("/api/reminders", { method: "POST", body: JSON.stringify(payload), headers: {'Content-Type': 'application/json'} });
         if (res.ok) {
             await refresh();
-            setView('view'); // Switch back to view after creation
+            setView('view'); 
         } else {
             setError((await res.text()) || "Failed to create reminder");
+        }
+    };
+    
+    const updateReminder = async (payload) => {
+        const res = await fetch(`/api/reminders/${payload._id}`, { method: "PUT", body: JSON.stringify(payload), headers: {'Content-Type': 'application/json'} });
+        if (res.ok) {
+            await refresh();
+            setEditingReminder(null);
+        } else {
+            setError((await res.text()) || "Failed to update reminder");
         }
     };
 
@@ -88,6 +190,11 @@ export default function DashboardPage() {
                     
                     <div className="flex-1">
                         {loading && <p>Loading...</p>}
+
+                        {!loading && view === 'home' && (
+                            <HomeStats stats={stats} />
+                        )}
+
                         {!loading && view === 'view' && (
                             <>
                                 <RemindersList
@@ -96,9 +203,10 @@ export default function DashboardPage() {
                                     onDelete={remove}
                                     onRunNow={runNow}
                                     onSelect={setSelectedReminder}
+                                    onEdit={setEditingReminder}
                                 />
                                 {totalPages > 1 && (
-                                     <div className="flex items-center justify-end space-x-2 py-4">
+                                    <div className="flex items-center justify-end space-x-2 py-4">
                                         <span className="text-sm text-muted-foreground">Page {currentPage} of {totalPages || 1}</span>
                                         <Button variant="outline" size="sm" onClick={() => setCurrentPage(p => Math.max(p - 1, 1))} disabled={currentPage === 1}><ChevronLeft className="w-4 h-4 mr-1" />Previous</Button>
                                         <Button variant="outline" size="sm" onClick={() => setCurrentPage(p => Math.min(p + 1, totalPages))} disabled={currentPage === totalPages}>Next<ChevronRight className="w-4 h-4 ml-1" /></Button>
@@ -111,6 +219,15 @@ export default function DashboardPage() {
                 </div>
             </main>
             <DeliveryHistoryDialog reminder={selectedReminder} onClose={() => setSelectedReminder(null)} />
+            
+            {editingReminder && (
+                <EditReminderDialog
+                    reminder={editingReminder}
+                    channels={channels}
+                    onUpdate={updateReminder}
+                    onClose={() => setEditingReminder(null)}
+                />
+            )}
         </div>
     );
 }

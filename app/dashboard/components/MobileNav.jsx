@@ -1,5 +1,5 @@
 "use client";
-import { Bell, PlusCircle, LayoutGrid, LogOut, X } from "lucide-react";
+import { Bell, PlusCircle, LayoutGrid, LogOut, X, Home } from "lucide-react";
 import { signOut } from "next-auth/react";
 import { Button } from "@/components/ui/button";
 
@@ -11,6 +11,9 @@ export function MobileNav({ view, setView, isNavOpen, setIsNavOpen }) {
                 <Button variant="ghost" size="icon" onClick={() => setIsNavOpen(false)}><X className="w-6 h-6" /></Button>
             </div>
             <nav className="p-4 space-y-2">
+                <Button variant={view === 'home' ? 'secondary' : 'ghost'} className="w-full justify-start" onClick={() => { setView('home'); setIsNavOpen(false); }}>
+                    <Home className="w-5 h-5 mr-3" />Home
+                </Button>
                 <Button variant={view === 'view' ? 'secondary' : 'ghost'} className="w-full justify-start" onClick={() => { setView('view'); setIsNavOpen(false); }}>
                     <LayoutGrid className="w-5 h-5 mr-3" />View Reminders
                 </Button>
