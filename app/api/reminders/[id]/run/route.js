@@ -1,10 +1,13 @@
-import { auth } from "@/auth";
-import { connectToDatabase } from "@/lib/db";
-import Reminder from "@/models/Reminder";
-import { postMessageWithRetry } from "@/lib/slack";
+import { getServerSession } from "next-auth";
+import { authOptions } from "../../../../../lib/auth-options"; // Corrected Path
+import { connectToDatabase } from "../../../../../lib/db";
+import Reminder from "../../../../../models/Reminder";
+import { postMessageWithRetry } from "../../../../../lib/slack";
+
+// ...
 
 export async function POST(_req, { params }) {
-  const session = await auth();
+  const session = await getServerSession(authOptions);
   if (!session) return new Response("Unauthorized", { status: 401 });
 
   await connectToDatabase();

@@ -1,8 +1,8 @@
 import { listChannels } from "@/lib/slack";
-import { auth } from "@/auth";
-
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth-options.js";
 export async function GET() {
-  const session = await auth();
+  const session = await getServerSession(authOptions);
   if (!session) return new Response("Unauthorized", { status: 401 });
 
   try {
