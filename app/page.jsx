@@ -29,30 +29,7 @@ export default function Home() {
         {/* Hero Section */}
         <HeroSectionOne />
 
-        {/* App Preview Section */}
-        <section className="w-full py-12 md:py-24 lg:py-32 bg-muted/40">
-          <div className="container px-4 md:px-6">
-            <div className="mx-auto max-w-5xl">
-              <div className="rounded-xl border bg-background shadow-2xl overflow-hidden">
-                <div className="h-11 flex items-center px-4 border-b">
-                  <div className="flex items-center gap-1.5">
-                    <span className="w-3 h-3 rounded-full bg-red-500"></span>
-                    <span className="w-3 h-3 rounded-full bg-yellow-400"></span>
-                    <span className="w-3 h-3 rounded-full bg-green-500"></span>
-                  </div>
-                </div>
-                <img
-                  src="app-dashboard.png"
-                  
-                  width="1200"
-                  height="675"
-                  alt="App Preview"
-                  className="w-full h-auto aspect-video object-fill"
-                />
-              </div>
-            </div>
-          </div>
-        </section>
+      
 
 
         {/* Features Section */}
