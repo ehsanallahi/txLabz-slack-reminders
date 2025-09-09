@@ -3,23 +3,32 @@
 import { signIn } from "next-auth/react";
 import { useState } from "react";
 import Link from "next/link";
+import ReCAPTCHA from "react-google-recaptcha";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [captchaToken, setCaptchaToken] = useState(null);
 
   const onSubmit = async (e) => {
     e.preventDefault();
+    if (!captchaToken) {
+      setError("Please complete the CAPTCHA.");
+      return;
+    }
     setError("");
     setLoading(true);
+
     const res = await signIn("credentials", {
       email,
       password,
+      captchaToken,
       redirect: false,
       callbackUrl: "/dashboard",
     });
+
     setLoading(false);
     if (res?.error) {
       setError("Invalid email or password");
@@ -61,17 +70,21 @@ export default function LoginPage() {
               required
             />
           </div>
+
+          <ReCAPTCHA
+            sitekey={process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY}
+            onChange={(token) => setCaptchaToken(token)}
+          />
+
           <button
             type="submit"
-            disabled={loading}
+            disabled={loading || !captchaToken}
             className="w-full rounded-md bg-foreground text-background py-2 font-medium hover:opacity-90 disabled:opacity-50"
           >
             {loading ? "Signing in..." : "Sign in"}
           </button>
         </form>
-        <div className="mt-6 text-xs text-foreground/60">
-          <p>Default: admin@example.com / password123</p>
-        </div>
+        
       </div>
     </div>
   );

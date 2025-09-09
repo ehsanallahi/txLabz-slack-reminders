@@ -44,7 +44,9 @@ export function EditReminderDialog({ reminder, channels, onUpdate, onClose }) {
                             </select>
                         </div>
                         <div>
-                            <label className="text-sm font-medium">Send at</label>
+                            <label className="text-sm font-medium">
+                                Send at <span className="text-xs text-gray-500">(PKT / GMT+5)</span>
+                            </label>
                             <input
                                 type="datetime-local"
                                 className="mt-1 w-full rounded-md border border-input bg-transparent px-3 py-2"
