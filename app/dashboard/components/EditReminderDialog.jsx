@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { Button } from "@/components/ui/button";
+import { ChannelCombobox } from "@/components/ChannelCombobox"; // Import the combobox
 
 export function EditReminderDialog({ reminder, channels, onUpdate, onClose }) {
     const [editedReminder, setEditedReminder] = useState(reminder);
@@ -31,17 +32,12 @@ export function EditReminderDialog({ reminder, channels, onUpdate, onClose }) {
                         </div>
                         <div>
                             <label className="text-sm font-medium">Channel</label>
-                            <select
-                                className="mt-1 w-full rounded-md border border-input bg-transparent px-3 py-2"
+                            {/* Replace the select dropdown with the ChannelCombobox */}
+                            <ChannelCombobox
+                                channels={channels}
                                 value={editedReminder.channelId}
-                                onChange={(e) => setEditedReminder({ ...editedReminder, channelId: e.target.value })}
-                                required
-                            >
-                                <option value="">Select channel…</option>
-                                {channels.map((c) => (
-                                    <option key={c.id} value={c.id}>{c.name}</option>
-                                ))}
-                            </select>
+                                onChange={(channelId) => setEditedReminder({ ...editedReminder, channelId })}
+                            />
                         </div>
                         <div>
                             <label className="text-sm font-medium">

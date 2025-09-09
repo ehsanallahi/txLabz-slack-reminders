@@ -3,6 +3,7 @@ import { useState, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import dynamic from 'next/dynamic';
 import TurndownService from 'turndown';
+import { ChannelCombobox } from "@/components/ChannelCombobox";
 
 const RichTextEditor = dynamic(
   () => import('@/components/ui/RichTextEditor').then(mod => mod.RichTextEditor),
@@ -22,6 +23,15 @@ export function CreateReminderForm({ channels, onCreate, setView }) {
         const newErrors = {};
         if (!form.message || form.message.trim() === "<p></p>" || form.message.trim() === "") {
             newErrors.message = "Message is required.";
+        }
+        if (!form.channelId) {
+            newErrors.channelId = "Please select a channel.";
+        }
+        if (form.frequency === 'once' && !form.scheduleAt) {
+            newErrors.scheduleAt = "Please select a date and time.";
+        }
+        if ((form.frequency === 'daily' || form.frequency === 'weekly') && !form.time) {
+            newErrors.time = "Please select a time.";
         }
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
@@ -74,23 +84,29 @@ export function CreateReminderForm({ channels, onCreate, setView }) {
         setView('view');
     };
 
-    
     return (
-        <form onSubmit={handleSubmit} className="max-w-2xl space-y-6">
-            <div className="space-y-2">
+        <form onSubmit={handleSubmit} className="max-w-2xl space-y-4">
+            <div className="space-y-1">
                 <label className="text-sm font-medium">Message</label>
                 <RichTextEditor value={form.message} onChange={(html) => setForm({ ...form, message: html })} />
                 {errors.message && <p className="text-sm text-red-600 mt-1">{errors.message}</p>}
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="space-y-2">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-1">
                     <label className="text-sm font-medium">Channel</label>
-                    <select className="w-full rounded-md border border-input bg-background px-3 py-2" value={form.channelId} onChange={(e) => setForm({ ...form, channelId: e.target.value })} required>
-                        <option value="">Select channel…</option>
-                        {channels.map((c) => (<option key={c.id} value={c.id}>{c.name}</option>))}
-                    </select>
+                    <ChannelCombobox
+                        channels={channels}
+                        value={form.channelId}
+                        onChange={(channelId) => {
+                            setForm({ ...form, channelId });
+                            if (errors.channelId) {
+                                setErrors(prev => ({ ...prev, channelId: null }));
+                            }
+                        }}
+                    />
+                    {errors.channelId && <p className="text-sm text-red-600 mt-1">{errors.channelId}</p>}
                 </div>
-                <div className="space-y-2">
+                <div className="space-y-1">
                     <label className="text-sm font-medium">Frequency</label>
                     <select className="w-full rounded-md border border-input bg-background px-3 py-2" value={form.frequency} onChange={(e) => setForm({ ...form, frequency: e.target.value })}>
                         <option value="once">Once</option>
@@ -99,27 +115,20 @@ export function CreateReminderForm({ channels, onCreate, setView }) {
                     </select>
                 </div>
             </div>
+
             {form.frequency === "once" && (
-                <div className="space-y-2">
-                    <label className="text-sm font-medium">
-                        Send at <span className="text-xs text-gray-500">(PKT / GMT+5)</span>
-                    </label>
-                    <input type="datetime-local" className="w-full rounded-md border border-input bg-background px-3 py-2" value={form.scheduleAt} onChange={(e) => setForm({ ...form, scheduleAt: e.target.value })} required />
+                <div className="space-y-1">
+                    <label className="text-sm font-medium">Send at <span className="text-xs text-gray-500">(PKT / GMT+5)</span></label>
+                    <input type="datetime-local" className="w-full rounded-md border border-input bg-background px-3 py-2" value={form.scheduleAt} onChange={(e) => setForm({ ...form, scheduleAt: e.target.value })} />
+                    {errors.scheduleAt && <p className="text-sm text-red-600 mt-1">{errors.scheduleAt}</p>}
                 </div>
             )}
-            {form.frequency === "daily" && (
-                <div className="space-y-2">
-                    <label className="text-sm font-medium">
-                        Time <span className="text-xs text-gray-500">(PKT / GMT+5)</span>
-                    </label>
-                    <input type="time" className="w-full rounded-md border border-input bg-background px-3 py-2" value={form.time} onChange={(e) => setForm({ ...form, time: e.target.value })} required />
-                </div>
-            )}
-            {form.frequency === "weekly" && (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div className="space-y-2">
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {form.frequency === "weekly" && (
+                    <div className="space-y-1">
                         <label className="text-sm font-medium">Day of the Week</label>
-                        <select className="w-full rounded-md border border-input bg-background px-3 py-2" value={form.dayOfWeek} onChange={(e) => setForm({ ...form, dayOfWeek: e.target.value })} required>
+                        <select className="w-full rounded-md border border-input bg-background px-3 py-2" value={form.dayOfWeek} onChange={(e) => setForm({ ...form, dayOfWeek: e.target.value })}>
                             <option value="1">Monday</option>
                             <option value="2">Tuesday</option>
                             <option value="3">Wednesday</option>
@@ -129,14 +138,16 @@ export function CreateReminderForm({ channels, onCreate, setView }) {
                             <option value="0">Sunday</option>
                         </select>
                     </div>
-                    <div className="space-y-2">
-                        <label className="text-sm font-medium">
-                            Time <span className="text-xs text-gray-500">(PKT / GMT+5)</span>
-                        </label>
-                        <input type="time" className="w-full rounded-md border border-input bg-background px-3 py-2" value={form.time} onChange={(e) => setForm({ ...form, time: e.target.value })} required />
+                )}
+                {(form.frequency === "daily" || form.frequency === "weekly") && (
+                    <div className="space-y-1">
+                        <label className="text-sm font-medium">Time <span className="text-xs text-gray-500">(PKT / GMT+5)</span></label>
+                        <input type="time" className="w-full rounded-md border border-input bg-background px-3 py-2" value={form.time} onChange={(e) => setForm({ ...form, time: e.target.value })} />
+                        {errors.time && <p className="text-sm text-red-600 mt-1">{errors.time}</p>}
                     </div>
-                </div>
-            )}
+                )}
+            </div>
+            
             <div>
                 <Button type="submit" disabled={isSubmitting}>
                     {isSubmitting ? 'Creating...' : 'Create Reminder'}

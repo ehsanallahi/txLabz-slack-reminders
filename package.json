@@ -3,9 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "npm-run-all --parallel dev:next dev:cron",
+    "dev": "npm-run-all --parallel dev:next ",
     "dev:next": "next dev --turbopack",
-    "dev:cron": "node --env-file=.env.local cron-starter.mjs",
     "build": "next build --turbopack",
     "start": "next start",
     "lint": "eslint"
@@ -14,6 +13,7 @@
     "@hookform/resolvers": "^5.2.1",
     "@radix-ui/react-dialog": "^1.1.15",
     "@radix-ui/react-label": "^2.1.7",
+    "@radix-ui/react-popover": "^1.1.15",
     "@radix-ui/react-select": "^2.2.6",
     "@radix-ui/react-slot": "^1.2.3",
     "@slack/web-api": "^7.10.0",
@@ -24,6 +24,7 @@
     "@tiptap/starter-kit": "^3.4.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
+    "cmdk": "^1.1.1",
     "cobe": "^0.6.4",
     "cron-parser": "^5.3.0",
     "dotenv": "^17.2.2",
