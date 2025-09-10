@@ -11,19 +11,7 @@ export default function Home() {
   return (
     <div className="flex flex-col min-h-screen bg-background text-foreground">
       {/* Header */}
-      {/* <header className="px-4 lg:px-6 h-16 flex items-center border-b">
-        <Link href="#" className="flex items-center justify-center" prefetch={false}>
-          <Bell className="h-6 w-6 text-primary" />
-          <span className="ml-2 text-lg font-semibold">TxLabz Reminder App</span>
-        </Link>
-        <nav className="ml-auto flex gap-4 sm:gap-6">
-          <Link href="/login" prefetch={false}>
-            <Button variant="outline">
-              Admin Login
-            </Button>
-          </Link>
-        </nav>
-      </header> */}
+     
 
       <main className="flex-1">
         {/* Hero Section */}
@@ -33,51 +21,9 @@ export default function Home() {
 
 
         {/* Features Section */}
-        <section className="w-full py-12 md:py-24 lg:py-32">
-          {/* <div className="container px-4 md:px-6">
-            <div className="flex flex-col items-center justify-center space-y-4 text-center mb-12">
-              <div className="inline-block rounded-lg bg-muted px-3 py-1 text-sm">Key Features</div>
-              <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl">Everything You Need to Keep Your Team in Sync</h2>
-              <p className="max-w-[900px] text-muted-foreground md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
-                From simple one-off announcements to complex weekly reports, our app handles it all.
-              </p>
-            </div>
-            <div className="mx-auto grid max-w-5xl items-start gap-8 sm:grid-cols-2 md:grid-cols-3">
-              <div className="grid gap-1 text-center">
-                <div className="flex justify-center items-center mb-4">
-                    <div className="bg-primary/10 p-4 rounded-full">
-                        <CalendarClock className="w-8 h-8 text-primary" />
-                    </div>
-                </div>
-                <h3 className="text-lg font-bold">Flexible Scheduling</h3>
-                <p className="text-sm text-muted-foreground">
-                  Schedule reminders to be sent once, every day, or on specific days of the week.
-                </p>
-              </div>
-              <div className="grid gap-1 text-center">
-                <div className="flex justify-center items-center mb-4">
-                    <div className="bg-primary/10 p-4 rounded-full">
-                        <Edit className="w-8 h-8 text-primary" />
-                    </div>
-                </div>
-                <h3 className="text-lg font-bold">Rich Message Formatting</h3>
-                <p className="text-sm text-muted-foreground">
-                  Use bold, italics, lists, and more to create clear and compelling messages right from our editor.
-                </p>
-              </div>
-              <div className="grid gap-1 text-center">
-                <div className="flex justify-center items-center mb-4">
-                    <div className="bg-primary/10 p-4 rounded-full">
-                        <BotMessageSquare className="w-8 h-8 text-primary" />
-                    </div>
-                </div>
-                <h3 className="text-lg font-bold">Automated & Reliable</h3>
-                <p className="text-sm text-muted-foreground">
-                  Our robust cron system ensures your messages are delivered reliably and on time, every time.
-                </p>
-              </div>
-            </div>
-          </div> */}
+        <section className="w-full py-0 md:py-24 lg:py-6">
+          
+          
           <FeaturesSectionDemo />
         </section>
 
@@ -85,7 +31,9 @@ export default function Home() {
 
       {/* Footer */}
       <footer className="flex flex-col gap-2 sm:flex-row py-6 w-full shrink-0 items-center px-4 md:px-6 border-t">
-        <p className="text-xs text-muted-foreground">&copy; 2025 TxLabz Inc. All rights reserved.</p>
+        <p className="text-xs text-muted-foreground">&copy; 2025 <Link href="https://www.txlabz.com" className="text-xs hover:underline underline-offset-4" prefetch={false}>
+            TxLabz Inc
+          </Link> .  All rights reserved.</p>
         <nav className="sm:ml-auto flex gap-4 sm:gap-6">
           <Link href="#" className="text-xs hover:underline underline-offset-4" prefetch={false}>
             Terms of Service

@@ -1,89 +1,83 @@
-import { cn } from "@/lib/utils";
-import {
-  IconAdjustmentsBolt,
-  IconCloud,
-  IconCurrencyDollar,
-  IconEaseInOut,
-  IconHeart,
-  IconHelp,
-  IconRouteAltLeft,
-  IconTerminal2,
-} from "@tabler/icons-react";
+import { Card, CardContent, CardHeader } from '@/components/ui/card'
+import { BotMessageSquare , FilePenLine, CalendarClock  } from 'lucide-react'
+import { ReactNode } from 'react'
 
-export default function FeaturesSectionDemo() {
-  const features = [
-    {
-      title: "Key Features",
-      description:
-        "Everything You Need to Keep Your Team in Sync.From simple one-off announcements to complex weekly reports, our app handles it all.",
-      icon: <IconTerminal2 />,
-    },
-    {
-      title: "Flexible Scheduling",
-      description:
-        "Schedule reminders to be sent once, every day, or on specific days of the week.",
-      icon: <IconEaseInOut />,
-    },
-    {
-      title: "Rich Message Formatting",
-      description:
-        "Use bold, italics, lists, and more to create clear and compelling messages right from our editor.",
-      icon: <IconCurrencyDollar />,
-    },
-    {
-      title: "Automated & Reliable",
-      description: "Our robust cron system ensures your messages are delivered reliably and on time, every time.",
-      icon: <IconCloud />,
-    },
-    
-  ];
-  return (
-    <div
-      className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4  relative z-10 py-10 max-w-7xl mx-auto">
-      {features.map((feature, index) => (
-        <Feature key={feature.title} {...feature} index={index} />
-      ))}
-    </div>
-  );
+export default function Features() {
+    return (
+        <section className="bg-zinc-50 py-16 md:py-32 dark:bg-transparent">
+            <div className="@container mx-auto max-w-5xl px-6">
+                <div className="text-center">
+                    <h2 className="text-balance text-4xl font-semibold lg:text-5xl">Keep Your Team in Sync</h2>
+                    <p className="mt-4">From simple one-off announcements to complex weekly reports, our app handles it all.</p>
+                </div>
+                <div className="@min-4xl:max-w-full @min-4xl:grid-cols-3 mx-auto mt-8 grid max-w-sm gap-6 *:text-center md:mt-16">
+                    <Card className="group shadow-zinc-950/5">
+                        <CardHeader className="pb-3">
+                            <CardDecorator>
+                                <CalendarClock 
+                                    className="size-6"
+                                    aria-hidden
+                                />
+                            </CardDecorator>
+                            
+
+                            <h3 className="mt-6 font-medium">Flexible Scheduling</h3>
+                        </CardHeader>
+
+                        <CardContent>
+                            <p className="text-sm">Schedule reminders to be sent once, every day, or on specific days of the week.</p>
+                        </CardContent>
+                    </Card>
+
+                    <Card className="group shadow-zinc-950/5">
+                        <CardHeader className="pb-3">
+                            <CardDecorator>
+                                <FilePenLine
+                                    className="size-6"
+                                    aria-hidden
+                                />
+                            </CardDecorator>
+
+                            <h3 className="mt-6 font-medium">Rich Message Formatting</h3>
+                        </CardHeader>
+
+                        <CardContent>
+                            <p className="mt-3 text-sm">Use bold, italics and more to create clear and compelling messages right from our editor.</p>
+                        </CardContent>
+                    </Card>
+
+                    <Card className="group shadow-zinc-950/5">
+                        <CardHeader className="pb-3">
+                            <CardDecorator>
+                                <BotMessageSquare 
+                                    className="size-6"
+                                    aria-hidden
+                                />
+                            </CardDecorator>
+
+                            <h3 className="mt-6 font-medium">Automated & Reliable</h3>
+                        </CardHeader>
+
+                        <CardContent>
+                            <p className="mt-3 text-sm">Our robust cron system ensures your messages are delivered reliably and on time, every time.</p>
+                        </CardContent>
+                    </Card>
+                </div>
+            </div>
+        </section>
+    )
 }
 
-const Feature = ({
-  title,
-  description,
-  icon,
-  index
-}) => {
-  return (
-    <div
-      className={cn(
-        "flex flex-col lg:border-r  py-10 relative group/feature dark:border-neutral-800",
-        (index === 0 || index === 4) && "lg:border-l dark:border-neutral-800",
-        index < 4 && "lg:border-b dark:border-neutral-800"
-      )}>
-      {index < 4 && (
+const CardDecorator = ({ children }) => (
+    <div className="relative mx-auto size-36 duration-200 [--color-border:color-mix(in_oklab,var(--color-zinc-950)10%,transparent)] group-hover:[--color-border:color-mix(in_oklab,var(--color-zinc-950)20%,transparent)] dark:[--color-border:color-mix(in_oklab,var(--color-white)15%,transparent)] dark:group-hover:bg-white/5 dark:group-hover:[--color-border:color-mix(in_oklab,var(--color-white)20%,transparent)]">
         <div
-          className="opacity-0 group-hover/feature:opacity-100 transition duration-200 absolute inset-0 h-full w-full bg-gradient-to-t from-neutral-100 dark:from-neutral-800 to-transparent pointer-events-none" />
-      )}
-      {index >= 4 && (
+            aria-hidden
+            className="absolute inset-0 bg-[linear-gradient(to_right,var(--color-border)_1px,transparent_1px),linear-gradient(to_bottom,var(--color-border)_1px,transparent_1px)] bg-[size:24px_24px]"
+        />
         <div
-          className="opacity-0 group-hover/feature:opacity-100 transition duration-200 absolute inset-0 h-full w-full bg-gradient-to-b from-neutral-100 dark:from-neutral-800 to-transparent pointer-events-none" />
-      )}
-      <div
-        className="mb-4 relative z-10 px-10 text-neutral-600 dark:text-neutral-400">
-        {icon}
-      </div>
-      <div className="text-lg font-bold mb-2 relative z-10 px-10">
-        <div
-          className="absolute left-0 inset-y-0 h-6 group-hover/feature:h-8 w-1 rounded-tr-full rounded-br-full bg-neutral-300 dark:bg-neutral-700 group-hover/feature:bg-blue-500 transition-all duration-200 origin-center" />
-        <span
-          className="group-hover/feature:translate-x-2 transition duration-200 inline-block text-neutral-800 dark:text-neutral-100">
-          {title}
-        </span>
-      </div>
-      <p
-        className="text-sm text-neutral-600 dark:text-neutral-300 max-w-xs relative z-10 px-10">
-        {description}
-      </p>
+            aria-hidden
+            className="bg-radial to-background absolute inset-0 from-transparent to-75%"
+        />
+        <div className="bg-background absolute inset-0 m-auto flex size-12 items-center justify-center border-l border-t">{children}</div>
     </div>
-  );
-};
+)
