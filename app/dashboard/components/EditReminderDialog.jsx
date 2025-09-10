@@ -2,14 +2,27 @@
 
 import { useState } from 'react';
 import { Button } from "@/components/ui/button";
-import { ChannelCombobox } from "@/components/ChannelCombobox"; // Import the combobox
+import { ChannelCombobox } from "@/components/ChannelCombobox";
 
 export function EditReminderDialog({ reminder, channels, onUpdate, onClose }) {
     const [editedReminder, setEditedReminder] = useState(reminder);
 
+    const formatToLocalDateTime = (isoString) => {
+        if (!isoString) return "";
+        const date = new Date(isoString);
+        const offset = date.getTimezoneOffset() * 60000;
+        const localDate = new Date(date.getTime() - offset);
+        return localDate.toISOString().slice(0, 16);
+    };
+
     const handleSubmit = (e) => {
         e.preventDefault();
-        onUpdate(editedReminder);
+        const localDate = new Date(editedReminder.scheduleAt);
+        const payload = {
+            ...editedReminder,
+            scheduleAt: localDate.toISOString(),
+        };
+        onUpdate(payload);
     };
     
     return (
@@ -32,7 +45,6 @@ export function EditReminderDialog({ reminder, channels, onUpdate, onClose }) {
                         </div>
                         <div>
                             <label className="text-sm font-medium">Channel</label>
-                            {/* Replace the select dropdown with the ChannelCombobox */}
                             <ChannelCombobox
                                 channels={channels}
                                 value={editedReminder.channelId}
@@ -41,12 +53,12 @@ export function EditReminderDialog({ reminder, channels, onUpdate, onClose }) {
                         </div>
                         <div>
                             <label className="text-sm font-medium">
-                                Send at <span className="text-xs text-gray-500">(PKT / GMT+5)</span>
+                                Send at <span className="text-xs text-gray-500">(PST)</span>
                             </label>
                             <input
                                 type="datetime-local"
                                 className="mt-1 w-full rounded-md border border-input bg-transparent px-3 py-2"
-                                value={editedReminder.scheduleAt ? new Date(editedReminder.scheduleAt).toISOString().slice(0, 16) : ""}
+                                value={formatToLocalDateTime(editedReminder.scheduleAt)}
                                 onChange={(e) => setEditedReminder({ ...editedReminder, scheduleAt: e.target.value })}
                                 required
                             />
