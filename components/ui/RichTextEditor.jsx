@@ -2,48 +2,81 @@
 
 import { useEditor, EditorContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
-import React from 'react';
-import { Bold, Italic, List, ListOrdered, Strikethrough } from 'lucide-react';
+import Link from '@tiptap/extension-link';
+import React, { useState, useCallback } from 'react';
+import { 
+    Bold, 
+    Italic, 
+    List, 
+    ListOrdered, 
+    Strikethrough, 
+    Code,
+    CodeSquare,
+    Link as LinkIcon 
+} from 'lucide-react';
 
-// Toolbar component for editor controls
+import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+
 const Toolbar = ({ editor }) => {
   if (!editor) {
     return null;
   }
+  
+  const [isLinkDialogOpen, setIsLinkDialogOpen] = useState(false);
+  const [linkUrl, setLinkUrl] = useState('');
 
-  // This component is updated to correctly call Tiptap commands
-  const ToggleButton = ({ editor, name, icon: Icon, params }) => {
-    // Correctly format command names (e.g., "BulletList" -> "toggleBulletList")
-    const commandName = `toggle${name}`;
-    
-    return (
-      <button
-        onClick={(e) => {
-            e.preventDefault();
-            editor.chain().focus()[commandName](params).run()
-        }}
-        disabled={!editor.can()[commandName](params)}
-        className={`p-2 rounded-md ${editor.isActive(name.charAt(0).toLowerCase() + name.slice(1), params) ? 'bg-muted' : 'hover:bg-muted'}`}
-        type="button"
-      >
-        <Icon className="w-4 h-4" />
-      </button>
-    );
-  };
+  const handleLinkOpen = useCallback(() => {
+    const previousUrl = editor.getAttributes('link').href;
+    setLinkUrl(previousUrl || '');
+    setIsLinkDialogOpen(true);
+  }, [editor]);
+
+  const handleLinkSet = useCallback(() => {
+    if (linkUrl) {
+      editor.chain().focus().extendMarkRange('link').setLink({ href: linkUrl }).run();
+    } else {
+      editor.chain().focus().extendMarkRange('link').unsetLink().run();
+    }
+    setIsLinkDialogOpen(false);
+    setLinkUrl('');
+  }, [editor, linkUrl]);
+
+  const buttonClasses = (isActive) =>
+    `p-2 rounded-md ${isActive ? 'bg-muted' : 'hover:bg-muted'}`;
 
   return (
-    <div className="flex items-center gap-1 border-b p-2">
-      <ToggleButton editor={editor} name="Bold" icon={Bold} />
-      <ToggleButton editor={editor} name="Italic" icon={Italic} />
-      <ToggleButton editor={editor} name="Strike" icon={Strikethrough} />
-      {/* Uncommented and corrected these buttons */}
-      <ToggleButton editor={editor} name="BulletList" icon={List} />
-      <ToggleButton editor={editor} name="OrderedList" icon={ListOrdered} />
-    </div>
+    <>
+      <div className="flex flex-wrap items-center gap-1 border-b p-2">
+        <button type="button" onClick={() => editor.chain().focus().toggleBold().run()} disabled={!editor.can().toggleBold()} className={buttonClasses(editor.isActive('bold'))}><Bold className="w-4 h-4" /></button>
+        <button type="button" onClick={() => editor.chain().focus().toggleItalic().run()} disabled={!editor.can().toggleItalic()} className={buttonClasses(editor.isActive('italic'))}><Italic className="w-4 h-4" /></button>
+        <button type="button" onClick={() => editor.chain().focus().toggleStrike().run()} disabled={!editor.can().toggleStrike()} className={buttonClasses(editor.isActive('strike'))}><Strikethrough className="w-4 h-4" /></button>
+        <button type="button" onClick={handleLinkOpen} className={buttonClasses(editor.isActive('link'))}><LinkIcon className="w-4 h-4" /></button>
+        <button type="button" onClick={() => editor.chain().focus().toggleCode().run()} disabled={!editor.can().toggleCode()} className={buttonClasses(editor.isActive('code'))}><Code className="w-4 h-4" /></button>
+        <button type="button" onClick={() => editor.chain().focus().toggleCodeBlock().run()} disabled={!editor.can().toggleCodeBlock()} className={buttonClasses(editor.isActive('codeBlock'))}><CodeSquare className="w-4 h-4" /></button>
+        <button type="button" onClick={() => editor.chain().focus().toggleBulletList().run()} disabled={!editor.can().toggleBulletList()} className={buttonClasses(editor.isActive('bulletList'))}><List className="w-4 h-4" /></button>
+        <button type="button" onClick={() => editor.chain().focus().toggleOrderedList().run()} disabled={!editor.can().toggleOrderedList()} className={buttonClasses(editor.isActive('orderedList'))}><ListOrdered className="w-4 h-4" /></button>
+      </div>
+
+      <Dialog open={isLinkDialogOpen} onOpenChange={setIsLinkDialogOpen}>
+        <DialogContent>
+          <DialogHeader><DialogTitle>Edit Link</DialogTitle></DialogHeader>
+          <div className="space-y-2">
+            <Label htmlFor="link-url">URL</Label>
+            <Input id="link-url" value={linkUrl} onChange={(e) => setLinkUrl(e.target.value)} placeholder="https://example.com" />
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setIsLinkDialogOpen(false)}>Cancel</Button>
+            <Button onClick={handleLinkSet}>Set Link</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </>
   );
 };
 
-// The main editor component
 export const RichTextEditor = ({ value, onChange }) => {
   const editor = useEditor({
     extensions: [
@@ -51,6 +84,10 @@ export const RichTextEditor = ({ value, onChange }) => {
         bulletList: { keepMarks: true, keepAttributes: true },
         orderedList: { keepMarks: true, keepAttributes: true },
       }),
+      Link.configure({
+        openOnClick: false,
+        autolink: true,
+      })
     ],
     content: value,
     onUpdate: ({ editor }) => {

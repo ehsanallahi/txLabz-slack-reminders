@@ -49,16 +49,35 @@ export function CreateReminderForm({ channels, onCreate, setView }) {
             strongDelimiter: '*',
             emDelimiter: '_',
             bulletListMarker: '*',
+            codeBlockStyle: 'fenced'
         });
 
         turndownService.addRule('strikethrough', {
             filter: ['del', 's', 'strike'],
-            replacement: function (content) {
-                return '~' + content + '~';
+            replacement: (content) => `~${content}~`
+        });
+        
+        turndownService.addRule('slackLink', {
+            filter: 'a',
+            replacement: function (content, node) {
+                const href = node.getAttribute('href');
+                const linkText = node.textContent; 
+                return '<' + href + '|' + linkText + '>';
             }
         });
 
-        const markdownMessage = turndownService.turndown(form.message);
+        turndownService.addRule('slackCode', {
+            filter: (node, options) => node.nodeName === 'CODE' && node.parentNode.nodeName !== 'PRE',
+            replacement: (content) => `\`${content}\``
+        });
+
+        turndownService.addRule('slackCodeBlock', {
+            filter: ['pre'],
+            replacement: (content) => `\`\`\`\n${content}\n\`\`\``
+        });
+
+        let markdownMessage = turndownService.turndown(form.message);
+        
         let payload = { ...form, message: markdownMessage, channelName: selectedChannel?.name };
         
         const now = new Date();
